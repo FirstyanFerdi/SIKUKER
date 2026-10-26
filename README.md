@@ -131,6 +131,7 @@ Laporan umpan balik karir diwajibkan memiliki **3 bagian Markdown terstruktur**:
 
 ```text
 SIKUKER/
+├── .venv/                               # Virtual Environment lokal (Terisolasi - diabaikan Git)
 ├── app/                                 # Direktori kode sumber aplikasi web lokal
 │   ├── core/
 │   │   ├── __init__.py                  # Inisialisasi package core
@@ -164,8 +165,9 @@ SIKUKER/
 │   ├── test_gemini_service.py           # 4 unit tests untuk prompt builder & fallback offline AI
 │   ├── test_ml_service.py               # 6 unit tests untuk pemuatan artefak, threshold, & prediksi model
 │   └── test_schemas.py                  # 16 unit tests untuk pengujian batas nilai ekstrim Pydantic v2
-├── .env.example                         # Template konfigurasi variabel lingkungan
-├── .gitignore                           # Berkas pengabaian git (mengabaikan .env, cache, & virtualenv)
+├── .env                                 # Konfigurasi privat (Kunci API asli - 100% diabaikan Git)
+├── .env.example                         # Template konfigurasi variabel lingkungan publik
+├── .gitignore                           # Berkas proteksi keamanan Git (mengabaikan .env, .venv, cache, CSV)
 ├── PROSES.md                            # Log kronologis eksekusi SDLC Waterfall, audit, & verifikasi
 ├── PRD.md                               # Product Requirements Document awal
 ├── requirements.txt                     # Daftar dependensi pustaka Python terstandarisasi
@@ -178,7 +180,7 @@ SIKUKER/
 
 ### Prasyarat Sistem
 * **Sistem Operasi:** Windows 10/11, macOS, atau Linux.
-* **Versi Python:** Python 3.10 hingga Python 3.13 (disarankan menggunakan *virtual environment*).
+* **Versi Python:** Python 3.10 hingga Python 3.13.
 * **Koneksi Internet:** Diperlukan saat mengunduh pustaka dan saat memanggil Gemini API (opsional untuk inferensi ML lokal).
 
 ---
@@ -191,8 +193,42 @@ cd "d:/SEMESTER 7/SISTEM CERDAS/SIKUKER"
 
 ---
 
-### Langkah 2: Pasang Dependensi Terstandarisasi
-Pasang seluruh pustaka yang tercantum di berkas `requirements.txt`:
+### Langkah 2: Menyiapkan Virtual Environment (`.venv`) & Dependensi
+
+Menggunakan **Virtual Environment (`.venv`)** sangat direkomendasikan agar seluruh pustaka proyek terisolasi dengan rapi dan tidak mengganggu instalasi Python utama di komputer Anda.
+
+#### 1. Buat Virtual Environment Baru
+Jalankan perintah pembuatan environment:
+```bash
+python -m venv .venv
+```
+
+#### 2. Aktifkan Virtual Environment
+Sesuaikan perintah aktivasi dengan shell/terminal yang Anda gunakan:
+
+* **Windows PowerShell:**
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+  *(Jika muncul tanda `(.venv)` berwarna hijau di sebelah kiri prompt terminal, berarti environment telah aktif).*
+
+  > [!TIP]
+  > **Solusi Error Execution Policy di PowerShell:**  
+  > Jika muncul pesan merah *"running scripts is disabled on this system"*, berikan izin eksekusi skrip lokal dengan menjalankan perintah ini sekali saja:  
+  > `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+
+* **Windows Command Prompt (CMD):**
+  ```cmd
+  .\.venv\Scripts\activate.bat
+  ```
+
+* **macOS / Linux / Git Bash:**
+  ```bash
+  source .venv/bin/activate
+  ```
+
+#### 3. Pasang Pustaka Dependensi ke dalam `.venv`
+Setelah `.venv` aktif, pasang pustaka melalui berkas `requirements.txt`:
 ```bash
 pip install -r requirements.txt
 ```
@@ -214,7 +250,9 @@ cp .env.example .env
 
 Buka file `.env` menggunakan teks editor (Notepad, VS Code, dll.) dan masukkan kunci API Gemini Anda:
 ```env
-# Google Gemini API Configuration
+# ==========================================
+# Google Gemini API Configuration for SIKUKER
+# ==========================================
 GEMINI_API_KEY=your_actual_gemini_api_key_here
 GEMINI_MODEL=gemini-3.1-flash-lite
 ```
@@ -227,14 +265,24 @@ GEMINI_MODEL=gemini-3.1-flash-lite
 ---
 
 ### Langkah 4: Menjalankan Aplikasi Web Streamlit
-Jalankan aplikasi web melalui terminal:
-```bash
-streamlit run app/main_ui.py
-```
-*(atau jika perintah `streamlit` tidak dikenali langsung di shell):*
-```bash
-python -m streamlit run app/main_ui.py
-```
+
+Pilih salah satu metode berikut untuk menjalankan aplikasi:
+
+* **Opsi A (Di dalam Terminal dengan `.venv` Aktif - Standar):**
+  ```bash
+  streamlit run app/main_ui.py
+  ```
+
+* **Opsi B (Menjalankan Langsung Tanpa Perlu Aktivasi Shell - Paling Cepat):**
+  Anda bisa langsung memanggil executable Streamlit di dalam `.venv`:
+  ```powershell
+  .\.venv\Scripts\streamlit.exe run app/main_ui.py
+  ```
+
+* **Opsi C (Melalui Modul Python Global):**
+  ```bash
+  python -m streamlit run app/main_ui.py
+  ```
 
 Setelah perintah dijalankan, server lokal akan aktif dan peramban web akan otomatis terbuka pada tautan:  
 👉 **`http://localhost:8501`**
@@ -249,6 +297,12 @@ Untuk mematikan server Streamlit yang sedang berjalan:
   Stop-Process -Id (Get-NetTCPConnection -LocalPort 8501).OwningProcess -Force
   ```
 * **Metode 3 (Windows Task Manager):** Tekan `Ctrl + Shift + Esc`, cari proses **Python**, lalu klik **End Task**.
+
+#### Keluar dari Virtual Environment:
+Jika Anda ingin menonaktifkan virtual environment di terminal setelah selesai bekerja:
+```bash
+deactivate
+```
 
 ---
 
@@ -289,10 +343,14 @@ Isi formulir pada halaman utama:
 
 ## 🧪 Pengujian Otomatis Suite (30 Unit Tests Passed)
 
-Suite pengujian otomatis dibangun menggunakan pustaka `pytest` dengan cakupan 30 kasus uji independen:
+Suite pengujian otomatis dibangun menggunakan pustaka `pytest` dengan cakupan 30 kasus uji independen. Pengujian dapat dijalankan langsung di dalam `.venv`:
 
-```bash
-python -m pytest -v
+```powershell
+# Menggunakan python di dalam .venv
+.\.venv\Scripts\python.exe -m pytest -v
+
+# Atau jika .venv sedang aktif:
+pytest -v
 ```
 
 ### Matriks Pengujian Unit (Test Coverage Matrix)
@@ -305,13 +363,13 @@ python -m pytest -v
 | `tests/test_schemas.py` | 16 | Validasi nilai batas ekstrim Pydantic v2 (IPK di luar 2.0-4.0, skor tes di luar 0-100, jam pelatihan di luar 0-500, pengalaman kerja, indeks kota, dan kategori tidak valid). | **PASSED** (100%) |
 | **Total Keseluruhan** | **30** | **Cakupan end-to-end inferensi, analisis gap, validasi data, dan AI feedback.** | **PASSED (100%)** |
 
-Cuplikan hasil eksekusi resmi di terminal:
+Cuplikan hasil eksekusi resmi di terminal `.venv`:
 ```text
 ============================= test session starts =============================
-platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.7.0 -- python.exe
+platform win32 -- Python 3.13.14, pytest-9.1.1, pluggy-1.7.0 -- D:\SEMESTER 7\SISTEM CERDAS\SIKUKER\.venv\Scripts\python.exe
 cachedir: .pytest_cache
 rootdir: D:\SEMESTER 7\SISTEM CERDAS\SIKUKER
-plugins: anyio-4.14.1
+plugins: anyio-4.15.1
 collecting ... collected 30 items
 
 tests/test_gap_analyzer.py::test_gap_analyzer_identifies_numeric_weaknesses PASSED [  3%]
@@ -345,29 +403,46 @@ tests/test_schemas.py::test_invalid_applicant_input_bounds[relevent_experience-S
 tests/test_schemas.py::test_invalid_applicant_input_bounds[enrolled_university-Online course] PASSED [ 96%]
 tests/test_schemas.py::test_prediction_result_validation PASSED          [100%]
 
-============================= 30 passed in 2.48s ==============================
+============================= 30 passed in 25.59s =============================
 ```
 
 ---
 
 ## ❓ Panduan Penyelesaian Masalah (Troubleshooting & FAQ)
 
-### 1. Muncul `AttributeError: Can't get attribute '_RemainderColsList'` saat memuat model
-* **Penyebab:** Versi pustaka `scikit-learn` pada lingkungan lokal berbeda dengan versi saat model diekspor dari Google Colab.
-* **Solusi:** Jalankan `pip install scikit-learn==1.6.1` untuk memastikan keselarasan versi artefak `.joblib`.
+### 1. Muncul error `running scripts is disabled on this system` saat aktivasi PowerShell
+* **Penyebab:** Pengaturan keamanan Windows PowerShell melarang eksekusi skrip `.ps1` dari pihak ketiga secara default.
+* **Solusi:** Buka PowerShell dan berikan izin eksekusi skrip lokal untuk pengguna saat ini:
+  ```powershell
+  Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+  ```
 
-### 2. Log menampilkan pesan `Attempt with model ... failed (timed out)`
+### 2. Bagaimana cara menghapus (*uninstall*) library jika proyek sudah selesai?
+* **Solusi Instan (Jika memakai `.venv`):** Cukup hapus folder `.venv` di direktori proyek:
+  ```powershell
+  Remove-Item -Recurse -Force .venv
+  ```
+* **Solusi Melalui Pip:**
+  ```bash
+  pip uninstall -r requirements.txt -y
+  ```
+
+### 3. Muncul `AttributeError: Can't get attribute '_RemainderColsList'` saat memuat model
+* **Penyebab:** Versi pustaka `scikit-learn` pada lingkungan lokal berbeda dengan versi saat model diekspor dari Google Colab.
+* **Solusi:** Jalankan `pip install scikit-learn==1.6.1` di dalam `.venv` untuk memastikan keselarasan versi artefak `.joblib`.
+
+### 4. Log menampilkan pesan `Attempt with model ... failed (timed out)`
 * **Penyebab:** Koneksi jaringan mengalami latensi atau pengaturan timeout API terlalu singkat.
 * **Solusi:** Sistem SIKUKER sudah dilengkapi pengaturan `timeout=25000` (25 detik) dan resolusi model cerdas ke `gemini-3.1-flash-lite`. Pastikan koneksi internet Anda stabil atau gunakan mode fallback deterministik yang otomatis aktif.
 
-### 3. Server Streamlit tidak bisa dijalankan karena port 8501 sedang dipakai
+### 5. Server Streamlit tidak bisa dijalankan karena port 8501 sedang dipakai
 * **Penyebab:** Ada proses Streamlit sebelumnya yang belum ditutup sempurna.
 * **Solusi:** Buka PowerShell dan hentikan proses pada port 8501 dengan perintah:
   ```powershell
   Stop-Process -Id (Get-NetTCPConnection -LocalPort 8501).OwningProcess -Force
   ```
 
-### 4. Apakah aplikasi bisa berjalan jika tidak memiliki kunci API Gemini?
+### 6. Apakah aplikasi bisa berjalan jika tidak memiliki kunci API Gemini?
 * **Jawaban:** **Bisa 100%.** SIKUKER memiliki *Deterministic Fallback Engine* di [app/services/gemini_service.py](file:///d:/SEMESTER%207/SISTEM%20CERDAS/SIKUKER/app/services/gemini_service.py). Jika kunci API tidak diisi, surat evaluasi karir dan rekomendasi belajar tetap tersusun secara otomatis berbasis aturan kesenjangan kualifikasi.
 
 ---
@@ -380,7 +455,7 @@ Dokumentasi proyek dikembangkan secara komprehensif mengikuti metodologi rekayas
 2. [**02_system_design.md**](docs/02_system_design.md) — *Software Design Document (SDD):* Diagram arsitektur terpisah (*Decoupled Pipeline*), diagram komponen berlapis, spesifikasi preprocessing dan algoritma Random Forest, desain prompt engineering, dan arsitektur resiliensi fallback.
 3. [**03_implementation_guide.md**](docs/03_implementation_guide.md) — *Technical Implementation Guide:* Struktur direktori, panduan instalasi dependensi, panduan konfigurasi `.env`, detail implementasi modul core/services/ui, tata cara eksekusi server, dan perintah stop server.
 4. [**04_testing_report.md**](docs/04_testing_report.md) — *Automated Testing & QA Report:* Rencana pengujian, matriks 30 kasus uji unit, verifikasi kriteria penerimaan, dan hasil uji regresi.
-5. [**PROSES.md**](PROSES.md) — *Engineering Execution Log:* Rekam jejak kronologis pelaksanaan proyek per fase Waterfall (Fase 1 hingga Fase 4.2), audit bug, dan log verifikasi.
+5. [**PROSES.md**](PROSES.md) — *Engineering Execution Log:* Rekam jejak kronologis pelaksanaan proyek per fase Waterfall (Fase 1 hingga Fase 5.1), audit bug, dan log verifikasi.
 
 ---
 

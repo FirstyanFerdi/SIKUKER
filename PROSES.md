@@ -226,10 +226,14 @@ Dokumen ini mencatat seluruh rekam jejak pelaksanaan, proses pengerjaan, status 
   2. **Pembersihan Cache & Artefak Sementara:**
      - Direktori `__pycache__/` dan `.pytest_cache/` telah dibersihkan secara tuntas dari workspace.
      - Dataset mentah CSV berukuran besar (`colab_pipeline/dataset/aug_train.csv`) telah diproteksi dan diabaikan oleh `.gitignore`.
-  3. **Penguatan `.gitignore` Tingkat Produksi:**
-     - Ditambahkan aturan komprehensif untuk mengabaikan secret files (`.env`, `*.env`, `secrets.toml`), virtual environment (`.venv/`, `venv/`), Jupyter checkpoints (`.ipynb_checkpoints/`), OS files (`Thumbs.db`, `.DS_Store`), dan editor settings (`.vscode/`, `.idea/`).
-  4. **Verifikasi Git Tracking:**
-     - Hasil verifikasi `git check-ignore -v .env` mengonfirmasi bahwa `.env` berstatus terabaikan secara sah (`.gitignore:8:*.env .env`).
+### FASE 5.1: Local Virtual Environment Setup (.venv Implementation)
+- **Waktu Eksekusi:** 2026-10-26
+- **Status:** **Selesai & Terverifikasi (30/30 Pytest Passed in .venv, Git Clean)**
+- **Aktivitas & Hasil Konfigurasi:**
+  1. Pembuatan virtual environment lokal menggunakan Python 3.13: `python -m venv .venv`.
+  2. Pemasangan seluruh pustaka terstandarisasi dari `requirements.txt` ke dalam `.venv` (Scikit-Learn 1.6.1, XGBoost 3.4.1, Pandas 2.2.3, Joblib 1.6.0, Streamlit 1.66.1, Google GenAI 2.33.0, Pydantic 2.14.1, dll.).
+  3. Verifikasi pengujian unit otomatis di dalam `.venv`: Seluruh **30/30 unit test lolos 100%**.
+  4. Verifikasi Git Hygiene: Direktori `.venv` diverifikasi terabaikan sempurna oleh `.gitignore` dan repositori GitHub tetap bersih (*working tree clean*).
 
 ---
 
@@ -246,7 +250,9 @@ Sesuai aturan SDLC Waterfall pada `AGENT.md`:
 | **Fase 4** | `tests/`, `docs/`, `README.md` | Verification, Testing (14 Tests Passed) & Technical Docs. | Selesai |
 | **Fase 4.1** | Deep Audit, Fixes & Docs Expansion | Audit kode & ekspansi dokumen teknis (30 Tests Passed). | Selesai |
 | **Fase 4.2** | Timeout Unit & Model Resilience Fix | Perbaikan milidetik timeout & model fast-lite (1.19s live, 30 Tests Passed). | Selesai |
-| **Fase 5** | Production Readiness & GitHub Security | Sanitasi keamanan, .gitignore hardening, & kesiapan GitHub. | **Selesai (Siap Push)** |
+| **Fase 5** | Production Readiness & GitHub Security | Sanitasi keamanan, .gitignore hardening, & kesiapan GitHub. | Selesai |
+| **Fase 5.1** | Isolated Virtual Environment (.venv) | Setup .venv terisolasi (30 Tests Passed in .venv, Git clean). | **Selesai (Production Ready)** |
+
 
 
 
