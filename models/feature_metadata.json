@@ -1,0 +1,65 @@
+{
+    "model_name": "RandomForestClassifier",
+    "sklearn_version": "1.6.1",
+    "numeric_features": [
+        "gpa",
+        "test_score",
+        "experience_years",
+        "training_hours",
+        "city_development_index"
+    ],
+    "categorical_features": [
+        "education_level",
+        "major_discipline",
+        "relevent_experience",
+        "enrolled_university"
+    ],
+    "all_features_order": [
+        "gpa",
+        "test_score",
+        "experience_years",
+        "training_hours",
+        "city_development_index",
+        "education_level",
+        "major_discipline",
+        "relevent_experience",
+        "enrolled_university"
+    ],
+    "status_thresholds": {
+        "terima_min_prob": 0.75,
+        "pertimbangan_min_prob": 0.45
+    },
+    "ideal_numeric_benchmarks": {
+        "gpa": 3.45,
+        "test_score": 78.5,
+        "experience_years": 12.0,
+        "training_hours": 50.0,
+        "city_development_index": 0.91
+    },
+    "categorical_options": {
+        "education_level": [
+            "Graduate",
+            "Masters",
+            "Phd",
+            "High School",
+            "Primary School"
+        ],
+        "major_discipline": [
+            "STEM",
+            "Business Degree",
+            "Arts",
+            "Humanities",
+            "No Major",
+            "Other"
+        ],
+        "relevent_experience": [
+            "Has relevent experience",
+            "No relevent experience"
+        ],
+        "enrolled_university": [
+            "no_enrollment",
+            "Full time course",
+            "Part time course"
+        ]
+    }
+}

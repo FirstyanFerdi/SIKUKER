@@ -1,0 +1,87 @@
+# ==========================================
+# SIKUKER - Git Ignore Rules
+# ==========================================
+
+# 1. Environment Variables & Secrets (CRITICAL FOR GITHUB SECURITY)
+.env
+.env.*
+*.env
+*.env.*
+secrets.toml
+.streamlit/secrets.toml
+# Whitelist template configuration
+!.env.example
+
+# 2. Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+virtualenv/
+.Python
+bin/
+lib/
+include/
+
+# 3. Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+
+# 4. Testing & Coverage Cache
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# 5. Jupyter Notebook & Colab Checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+*-checkpoint.ipynb
+
+# 6. Large Datasets & Raw Data
+*.csv
+*.tsv
+*.parquet
+*.feather
+*.h5
+*.hdf5
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.xlsx
+*.xls
+data/
+datasets/
+raw_data/
+dataset/
+colab_pipeline/dataset/
+
+# 7. IDE & Editor Artifacts
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# 8. OS System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
