@@ -525,7 +525,7 @@ with st.container(border=True):
             help="Rentang: 2.00 - 4.00 (Benchmark ideal: 3.45)",
         )
         test_score = st.number_input(
-            "Skor Ujian Teknis / Koding",
+            "Skor Ujian Teknis",
             min_value=0.0,
             max_value=100.0,
             step=1.0,
